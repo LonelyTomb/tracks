@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useLayoutEffect} from 'react'
 import {View, StyleSheet} from 'react-native'
 import Spacer from "../components/Spacer";
 import {Context as AuthContext} from "../context/AuthContext";
@@ -6,13 +6,21 @@ import AuthForm from "../components/AuthForm";
 import NavLink from "../components/NavLink";
 import {NavigationEvents} from 'react-navigation'
 
-const SignUpScreen = () => {
+const SignUpScreen = ({navigation}) => {
 	const {state, signUp, clearErrorMessage} = useContext(AuthContext)
 
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerShown: false
+		})
+	}, [navigation])
+
+	useEffect(() => {
+		return navigation.addListener('focus', clearErrorMessage)
+	}, [navigation])
+
 	return (<View style={styles.container}>
-		<NavigationEvents
-			onWillFocus={clearErrorMessage}
-		/>
+
 		<AuthForm
 			headerText={'Sign up for Tracker'}
 			errorMessage={state.errorMessage}
@@ -27,11 +35,7 @@ const SignUpScreen = () => {
 		</Spacer>
 	</View>)
 }
-SignUpScreen.navigationOptions = () => {
-	return {
-		headerShown: false
-	}
-}
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

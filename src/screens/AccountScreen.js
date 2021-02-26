@@ -1,4 +1,4 @@
-import React, {useContext} from 'react'
+import React, {useContext, useLayoutEffect} from 'react'
 import {View, StyleSheet, SafeAreaView} from 'react-native'
 import {Button, Text} from "react-native-elements";
 import Spacer from "./../components/Spacer"
@@ -6,7 +6,7 @@ import {Context as AuthContext} from "./../context/AuthContext"
 import {FontAwesome} from "@expo/vector-icons";
 
 
-const AccountScreen = () => {
+const AccountScreen = ({navigation}) => {
 	const {signOut} = useContext(AuthContext)
 
 	return (<SafeAreaView style={styles.container}>
@@ -21,10 +21,7 @@ const AccountScreen = () => {
 		</Spacer>
 	</SafeAreaView>)
 }
-AccountScreen.navigationOptions = () => ({
-	tabBarLabel: 'Account',
-	tabBarIcon: <FontAwesome name={'gear'} size={20}/>
-})
+
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

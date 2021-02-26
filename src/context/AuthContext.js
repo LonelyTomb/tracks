@@ -22,7 +22,7 @@ const tryLocalSignIn = dispatch => async () => {
 	const token = await SecureStore.getItemAsync('token')
 	if (token) {
 		dispatch({type: 'SIGN_IN', payload: token})
-		navigate('TrackList')
+		navigate('Tracks')
 	} else {
 		navigate('loginFlow')
 	}

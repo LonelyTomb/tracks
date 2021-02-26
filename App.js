@@ -1,7 +1,14 @@
 import React from 'react';
-import {createAppContainer, createSwitchNavigator} from "react-navigation";
-import {createStackNavigator} from 'react-navigation-stack'
-import {createBottomTabNavigator} from 'react-navigation-tabs'
+//v4
+// import {createSwitchNavigator} from "react-navigation";
+// import {createStackNavigator} from 'react-navigation-stack'
+// import {createBottomTabNavigator} from 'react-navigation-tabs'
+
+//v5
+import {NavigationContainer} from '@react-navigation/native'
+import {createStackNavigator} from '@react-navigation/stack'
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+
 import {StyleSheet, Text, View} from 'react-native';
 import AccountScreen from "./src/screens/AccountScreen";
 import SignInScreen from "./src/screens/SignInScreen";
@@ -16,51 +23,57 @@ import {setNavigator} from './src/navigationRef'
 import ResolveAuthScreen from "./src/screens/ResolveAuthScreen";
 import {FontAwesome} from "@expo/vector-icons";
 
+const Stack = createStackNavigator()
+const Tab = createBottomTabNavigator()
 
-const trackListFlow = createStackNavigator({
-	TrackList: TrackListScreen,
-	TrackDetail: TrackDetailScreen
-})
+const loginFlow = () => (<Stack.Navigator>
+	<Stack.Screen name={'SignUp'} component={SignUpScreen}/>
+	<Stack.Screen name={'SignIn'} component={SignInScreen}/>
+</Stack.Navigator>)
 
-trackListFlow.navigationOptions = () => ({
-	title: 'Tracks',
-	tabBarIcon: <FontAwesome name={'th-list'} size={20}/>
-})
-const switchNavigator = createSwitchNavigator({
-	ResolveAuth: ResolveAuthScreen,
-	loginFlow: createStackNavigator({
-		SignUp: SignUpScreen,
-		SignIn: SignInScreen
-	}),
-	mainFlow: createBottomTabNavigator({
-		trackListFlow,
-		TrackCreate: TrackCreateScreen,
-		Account: AccountScreen
-	}, {
-		defaultNavigationOptions: {
-			title: 'Tracks'
-		},
-		tabBarOptions: {
-			tabStyle: {
-				paddingVertical: 5,
-				backgroundColor: '#111111'
-			}
-		}
-	})
-}, {
-	initialRouteName: 'ResolveAuth'
-})
+const trackListFlow = () => (
+	<Stack.Navigator initialRouteName={'TrackList'}>
+		<Stack.Screen name={'TrackList'} component={TrackListScreen}/>
+		<Stack.Screen name={'TrackDetail'} component={TrackDetailScreen}/>
+	</Stack.Navigator>
+)
 
-const App = createAppContainer(switchNavigator)
+const TrackTabs = () => (
+	<Tab.Navigator>
+		<Tab.Screen name={'trackListFlow'} component={trackListFlow} options={{
+			title: 'Tracks',
+			tabBarIcon: () => (<FontAwesome name={'th-list'} size={20}/>)
+		}}/>
+		<Tab.Screen name={'Add Track'} component={TrackCreateScreen} options={{
+			tabBarIcon: () => (<FontAwesome name={'plus'} size={20}/>)
+		}}/>
+		<Tab.Screen name={'Account'} component={AccountScreen} options={{
+			tabBarLabel: 'Account',
+			tabBarIcon: () => (
+				<FontAwesome name={'gear'} size={20}/>
+			)
+		}}/>
+	</Tab.Navigator>
+)
+
+const App = () => {
+	return <NavigationContainer ref={(navigator) => {
+		setNavigator(navigator)
+	}}>
+		<Stack.Navigator>
+			<Stack.Screen name={'ResolveAuth'} component={ResolveAuthScreen}/>
+			<Stack.Screen name={'loginFlow'} component={loginFlow}/>
+			<Stack.Screen name={'Tracks'} component={TrackTabs}/>
+		</Stack.Navigator>
+	</NavigationContainer>
+}
 
 export default () => {
 	return (
 		<TrackProvider>
 			<LocationProvider>
 				<AuthProvider>
-					<App ref={(navigator) => {
-						setNavigator(navigator)
-					}}/>
+					<App/>
 				</AuthProvider>
 			</LocationProvider>
 		</TrackProvider>

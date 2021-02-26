@@ -1,14 +1,25 @@
-import React, {useContext} from 'react'
+import React, {useContext, useLayoutEffect, useEffect} from 'react'
 import {StyleSheet, FlatList, SafeAreaView, TouchableOpacity} from 'react-native'
 import Spacer from "../components/Spacer";
 import {Text, ListItem} from 'react-native-elements'
-import {NavigationEvents} from 'react-navigation'
+
 import {Context as TrackContext} from '../context/TrackContext'
 
 const TrackListScreen = ({navigation}) => {
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerShown: false,
+			tabBarLabel: 'Tracks'
+		})
+	}, [navigation])
+
+	useEffect(() => {
+		return navigation.addListener('focus', fetchTracks)
+	}, [])
 	const {state, fetchTracks} = useContext(TrackContext)
 	return (<SafeAreaView style={styles.container}>
-		<NavigationEvents onWillFocus={fetchTracks}/>
+
 		<Spacer>
 			<Text h2 style={styles.header}>Tracks</Text>
 		</Spacer>
@@ -32,11 +43,6 @@ const TrackListScreen = ({navigation}) => {
 		/>
 	</SafeAreaView>)
 }
-
-TrackListScreen.navigationOptions = () => ({
-	tabBarLabel: 'Tracks',
-	headerShown: false
-})
 
 const styles = StyleSheet.create({
 	container: {
